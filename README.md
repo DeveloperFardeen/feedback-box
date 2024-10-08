@@ -39,8 +39,11 @@ This project is a feedback collection form with a cute UI that allows users to s
    git clone https://github.com/your-username/feedback-form.git
 2. Fire the sql given in database.sql to create database and table in MySQL
 3. Ensure your server supports PHP and MySQL, and place the project files in your server's root directory (htdocs if using XAMPP).
-4. Access the form via your browser: http://localhost/feedback-form/index.html
+4. Access the form via your browser:
+   ```bash
+   http://localhost/feedback-form/index.html
 
+```bash
 feedback-box/
 │
 ├── index.html      # The feedback form HTML file
