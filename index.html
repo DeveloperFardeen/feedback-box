@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #111;
+        }
+
+        .feedback-form {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .feedback-form .feedback-heading {
+            margin: 0;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+
+        .feedback-form input, .feedback-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #999;
+            outline: none;
+            border-radius: 5px;
+            background: #f4f5f8;
+            box-sizing: border-box;
+        }
+        
+        .feedback-form textarea:focus,
+        .feedback-form input:focus {
+        	border: 1px solid #333;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 30px;
+        }
+
+        .rating i:hover {
+            color: #d3a013;
+            cursor: pointer;
+        }
+
+        .rating i.selected {
+            color: #07a12d;
+        }
+        
+        .rating .btn {
+            background-color: #f4f5f8;
+            cursor: pointer;
+            font-size: 25px;
+        	padding: 5px 20px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            outline: none;
+            transition: color 0.3s ease;
+        }
+
+        .rating .btn:hover i {
+            color: #07a12d
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="feedback-form">
+    <h2 class="feedback-heading">Feedback Form</h2>
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="text" id="mob" placeholder="Mobile Number" required>
+    <textarea id="feedback" placeholder="Your Feedback" rows="4" required></textarea>
+    
+    <div class="rating">
+        <i class="icon fa fa-frown-o" data-value="1"></i>
+        <i class="icon fa fa-meh-o" data-value="2"></i>
+        <i class="icon fa fa-smile-o" data-value="3"></i>
+        <i></i>
+        <span class="btn" id="submit-btn"><i class="fa fa-paper-plane"></i></span>
+    </div>
+
+    <div id="message"></div>
+</div>
+
+<!-- JavaScript for handling form data -->
+<script>
+    let rating = 0;
+    document.querySelectorAll('.rating .icon').forEach(icon => {
+        icon.addEventListener('click', function() {
+            document.querySelectorAll('.rating .icon').forEach(i => i.classList.remove('selected'));
+            this.classList.add('selected');
+            rating = this.getAttribute('data-value');
+            rating = parseInt(rating);
+        });
+    });
+
+    document.getElementById('submit-btn').addEventListener('click', function(event) {
+        let name = document.getElementById('name').value;
+        let mob = document.getElementById('mob').value;
+        let feedback = document.getElementById('feedback').value;
+
+        if (!name || !mob || !feedback || rating === 0) {
+            document.getElementById('message').innerText = "Please fill all fields!";
+            document.getElementById('message').style.color = "red";
+            return;
+        }
+
+        // AJAX request to send data to PHP
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'feedback.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onload = function() {
+            if (this.status === 200) {
+                document.getElementById('message').innerText = this.responseText;
+                document.getElementById('message').style.color = "green";
+                document.getElementById('name').value = "";
+                document.getElementById('mob').value = "";
+                document.getElementById('feedback').value = "";
+                document.querySelectorAll('.rating .icon').forEach(i => i.classList.remove('selected'));
+                rating = 0;
+                setTimeout(() => {
+                    document.getElementById('message').innerText = "";
+                    document.getElementById('message').style.color = "black";
+                }, 3000);
+            } else {
+                document.getElementById('message').innerText = "Failed to submit feedback!";
+                document.getElementById('message').style.color = "red";
+            }
+        };
+        xhr.send(`name=${name}&mob=${mob}&feedback=${feedback}&rating=${rating}`);
+    });
+</script>
+
+</body>
+</html>
